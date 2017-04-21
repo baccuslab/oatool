@@ -1,0 +1,6 @@
+.DS_Store
+*.swp
+*.h5
+__pycache__/*
+*.pyc
+*egg-info
