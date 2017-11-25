@@ -278,6 +278,7 @@ if __name__ == '__main__':
 
     except ValueError as exc:
         print('Analysis ended early, most likely because the recording stopped.')
+        print(exc)
 
     except Exception as exc:
         import traceback

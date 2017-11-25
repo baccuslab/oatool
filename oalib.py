@@ -387,8 +387,11 @@ class OnlineReceptiveField(OnlineAnalysis):
         # Plot 1D (pure temporal RF)
         if self.stimulus.ndim == 1:
             self._temporal_rf_line.set_ydata(self.current_result)
-            self._axes[0].set_ylim(self.current_result.min(), 
-                    self.current_result.max())
+            mn = self.current_result.min()
+            mn -= 0.1 * abs(mn)
+            mx = self.current_result.max()
+            mx += 0.1 * abs(mx)
+            self._axes[0].set_ylim(mn, mx)
 
         # Plot 2D spatiotemporal RF
         elif self.stimulus.ndim == 2:
@@ -400,8 +403,11 @@ class OnlineReceptiveField(OnlineAnalysis):
         # Plot decomposed spatial and temporal kernels
         else:
             self._temporal_rf_line.set_ydata(self._temporal_rf)
-            self._axes[0].set_ylim(self._temporal_rf.min(), 
-                    self._temporal_rf.max())
+            mn = self._temporal_rf.min()
+            mn -= 0.1 * abs(mn)
+            mx = self._temporal_rf.max()
+            mx += 0.1 * abs(mx)
+            self._axes[0].set_ylim(mn, mx)
             self._spatial_rf_image.set_data(self._spatial_rf)
             self._spatial_rf_image.set_clim(self._spatial_rf.min(),
                     self._spatial_rf.max())
@@ -446,7 +452,7 @@ class OnlineReceptiveField(OnlineAnalysis):
                     str(self.length)))
 
             self._spatiotemporal_rf_image = self._axes[0].imshow(
-                    self.current_result.T)
+                    self.current_result.T, origin='lower')
 
         # Two axes, one each for spatial and temporal kernels
         else:
@@ -459,13 +465,13 @@ class OnlineReceptiveField(OnlineAnalysis):
 
             xx = np.linspace(0, self.length, self.filter_length)
             self._temporal_rf_line = self._axes[0].plot(xx,
-                    np.zeros((self.filter_length,)))[0]
+                    np.zeros((self.filter_length,)), linewidth=3)[0]
 
             self._axes.append(self.figure.add_subplot(122))
             self._axes[1].set_title('Spatial RF')
 
             self._spatial_rf_image = self._axes[1].imshow(
-                    np.zeros(self.stimulus.shape[1:]))
+                    np.zeros(self.stimulus.shape[1:]), origin='lower')
 
             # Make dummy kernels
             self._spatial_rf, self._temporal_rf = pyret.filtertools.decompose(
@@ -575,8 +581,7 @@ class OnlineReverseCorrelation(OnlineReceptiveField):
 
         # Compute reverse correlation, flip along time axis
         self.current_result += pyret.filtertools.revcorr(
-                stim_upsampled, data[self.filter_length - 1 :], 
-                self.filter_length)[0][::-1, ...]
+                stim_upsampled, data, self.filter_length)[0][::-1, ...]
 
         # Decompose if necessary
         if self.stimulus.ndim == 3:
