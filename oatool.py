@@ -292,10 +292,6 @@ if __name__ == '__main__':
         oa.plot()
 
         # Cleanup
-        try:
-            client.stop_recording()
-        except:
-            pass
         client.disconnect()
 
         print('Press ENTER to quit')
